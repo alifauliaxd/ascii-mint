@@ -5,7 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
 
-const CONTRACT_ADDRESS = "0xcD36Ae752c14bEB401d94B2bC8a42459A375e5Af"; 
+const CONTRACT_ADDRESS = "0xcD36Ae752c14bEB401d94B2bC8a42459A375e5Af";
 const EXPLORER_URL = `https://explorer.ritualfoundation.org/address/${CONTRACT_ADDRESS}`;
 
 export default function Home() {
@@ -34,13 +34,13 @@ export default function Home() {
 
   const handleMint = async () => {
     if (!address || !previewUri) return;
-    
+
     try {
       // 1. Siapin Metadata (Gambarnya tetep kita simpen di dalem IPFS)
       const metadata = {
         name: `ASCII MINT - @${username}`,
         description: "Generated ASCII Art on Ritual Network Testnet",
-        image: previewUri 
+        image: previewUri
       };
 
       // 2. Upload metadata ke IPFS lewat API kita
@@ -49,7 +49,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ metadata })
       });
-      
+
       const uploadData = await uploadRes.json();
       if (!uploadData.ipfsUrl) {
         alert("Gagal nitipin file ke IPFS bang!");
@@ -62,7 +62,7 @@ export default function Home() {
         abi: [{ name: 'mintNFT', type: 'function', stateMutability: 'payable', inputs: [{ name: 'recipient', type: 'address' }, { name: 'tokenURI', type: 'string' }], outputs: [{ name: '', type: 'uint256' }] }],
         functionName: 'mintNFT',
         args: [address, uploadData.ipfsUrl],
-        value: parseEther('0'), 
+        value: parseEther('0'),
       });
     } catch (error) {
       console.error(error);
@@ -89,11 +89,11 @@ export default function Home() {
         <div className="flex gap-2 w-full max-w-md mb-12 bg-neutral-900 p-1 border border-neutral-800 rounded-2xl shadow-2xl">
           <div className="relative flex-1">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600">@</span>
-            <input 
-              type="text" placeholder="username" value={username} 
+            <input
+              type="text" placeholder="username" value={username}
               onChange={(e) => setUsername(e.target.value.replace('@', ''))}
               className="w-full pl-10 pr-4 py-3 bg-transparent text-white focus:outline-none text-sm"
-              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()} 
+              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             />
           </div>
           <button onClick={handleGenerate} disabled={isLoading} className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-neutral-200 transition text-xs">
@@ -102,15 +102,15 @@ export default function Home() {
         </div>
 
         {/* PREVIEW BOX - Posisi items-start biar nempel ke atas */}
-        <div 
+        <div
           className="w-[320px] h-[320px] bg-black border border-neutral-900 flex items-start justify-center overflow-hidden rounded-2xl shadow-2xl mb-12 relative"
           onContextMenu={(e) => e.preventDefault()}
         >
           {previewUri ? (
-            <img 
-              src={previewUri} 
-              alt="Preview" 
-              className="w-full h-full object-contain pointer-events-none select-none" 
+            <img
+              src={previewUri}
+              alt="Preview"
+              className="w-full h-full object-contain pointer-events-none select-none"
             />
           ) : (
             <div className="h-full flex items-center">
@@ -134,15 +134,14 @@ export default function Home() {
               )
             ) : (
               <div className="flex flex-col items-center gap-4 text-center">
-                {/* Teks Sukses Bahasa Inggris */}
                 <p className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest animate-pulse">
                   🔥 NFT SUCCESSFULLY MINTED!
                 </p>
 
                 {/* Link Transaksi (Dibungkus teks) */}
-                <a 
-                  href={`https://explorer.ritualfoundation.org/tx/${hash}`} 
-                  target="_blank" 
+                <a
+                  href={`https://explorer.ritualfoundation.org/tx/${hash}`}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-neutral-400 text-[10px] hover:text-emerald-400 transition-colors underline tracking-widest uppercase mb-2"
                 >
@@ -150,22 +149,44 @@ export default function Home() {
                 </a>
 
                 <div className="flex gap-4 mt-2">
-                  {/* Tombol Share dengan Caption Bahasa Inggris */}
-                  <a 
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Just minted my ASCII NFT @${username} on Ritual Testnet! 🔥\n\nView my transaction here:\nhttps://explorer.ritualfoundation.org/tx/${hash}`)}`} 
-                    target="_blank" 
+                  <a
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Just minted my ASCII NFT @${username} on Ritual Testnet! 🔥\n\nView my transaction here:\nhttps://explorer.ritualfoundation.org/tx/${hash}`)}`}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="px-8 py-3 border border-white text-[10px] font-bold hover:bg-white hover:text-black transition tracking-widest"
                   >
                     SHARE TO X
                   </a>
-                  
+
                   {/* Tombol Save Image */}
-                  <button 
-                    onClick={() => { const a = document.createElement('a'); a.href = previewUri; a.download = `ASCII_${username}.svg`; a.click(); }} 
+                  <button
+                    onClick={() => {
+                      const img = new Image();
+                      img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        // Set resolusi PNG-nya (misal 800x800 biar tajem)
+                        canvas.width = 800;
+                        canvas.height = 800;
+                        const ctx = canvas.getContext("2d");
+
+                        // Kasih background hitam dulu
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        // Gambar SVG-nya ke atas canvas
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        // Download hasilnya sebagai PNG
+                        const a = document.createElement('a');
+                        a.href = canvas.toDataURL("image/png");
+                        a.download = `ASCII_${username}.png`;
+                        a.click();
+                      };
+                      img.src = previewUri;
+                    }}
                     className="px-8 py-3 border border-white text-[10px] font-bold hover:bg-white hover:text-black transition tracking-widest"
                   >
-                    SAVE IMAGE
+                    SAVE AS PNG
                   </button>
                 </div>
               </div>
@@ -179,11 +200,11 @@ export default function Home() {
           </p>
           <div className="flex gap-8">
             <a href="https://x.com/kaiclyde447" target="_blank" className="text-neutral-500 hover:text-white transition uppercase text-[10px] font-bold tracking-widest flex items-center gap-2">
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
               kaiclyde447
             </a>
             <a href="https://github.com/alifauliaxd" target="_blank" className="text-neutral-500 hover:text-white transition uppercase text-[10px] font-bold tracking-widest flex items-center gap-2">
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" /></svg>
               alifauliaxd
             </a>
           </div>
