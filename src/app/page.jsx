@@ -150,14 +150,13 @@ export default function Home() {
 
                 <div className="flex gap-4 mt-2">
                   <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Just minted my ASCII NFT @${username} on Ritual Testnet! 🔥\n\nView my transaction here:\nhttps://explorer.ritualfoundation.org/tx/${hash}`)}`}
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Just minted my ASCII PFP @${username} on @ritualnet Testnet! 🔥\n\nTurning raw code into on-chain art. No pixels needed when you can build with pure characters. \n\nGo mint your own ASCII PFP here: https://ritual-ascii.vercel.app`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-8 py-3 border border-white text-[10px] font-bold hover:bg-white hover:text-black transition tracking-widest"
                   >
                     SHARE TO X
                   </a>
-
                   {/* Tombol Save Image */}
                   <button
                     onClick={() => {
