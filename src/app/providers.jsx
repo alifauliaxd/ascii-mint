@@ -8,7 +8,7 @@ import { ritualTestnet } from '../config/network';
 
 const config = getDefaultConfig({
   appName: 'Ritual ASCII NFT',
-  projectId: 'f4f5a13c54b2c0323bdbef2d5ee0bda0', 
+  projectId: 'c8d86e716ade527fc9b6f3accbf465de', 
   chains: [ritualTestnet],
   ssr: true,
 });
